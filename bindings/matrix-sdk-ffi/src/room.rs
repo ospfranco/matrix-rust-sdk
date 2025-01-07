@@ -27,7 +27,7 @@ use ruma::{
     },
     EventId, Int, OwnedDeviceId, OwnedUserId, RoomAliasId, UserId,
 };
-use tokio::sync::RwLock;
+use tokio_with_wasm::sync::RwLock;
 use tracing::error;
 
 use super::RUNTIME;

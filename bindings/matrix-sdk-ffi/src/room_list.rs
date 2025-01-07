@@ -19,7 +19,7 @@ use matrix_sdk_ui::{
     unable_to_decrypt_hook::UtdHookManager,
 };
 use ruma::{OwnedRoomOrAliasId, OwnedServerName, ServerName};
-use tokio::sync::RwLock;
+use tokio_with_wasm::sync::RwLock;
 
 use crate::{
     error::ClientError,

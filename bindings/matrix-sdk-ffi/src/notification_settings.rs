@@ -13,7 +13,7 @@ use ruma::{
     push::{PredefinedOverrideRuleId, PredefinedUnderrideRuleId, RuleKind},
     RoomId,
 };
-use tokio::sync::RwLock as AsyncRwLock;
+use tokio_with_wasm::sync::RwLock as AsyncRwLock;
 
 use crate::error::NotificationSettingsError;
 

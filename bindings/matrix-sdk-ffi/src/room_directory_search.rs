@@ -19,7 +19,7 @@ use eyeball_im::VectorDiff;
 use futures_util::StreamExt;
 use matrix_sdk::room_directory_search::RoomDirectorySearch as SdkRoomDirectorySearch;
 use ruma::ServerName;
-use tokio::sync::RwLock;
+use tokio_with_wasm::sync::RwLock;
 
 use super::RUNTIME;
 use crate::{error::ClientError, task_handle::TaskHandle};

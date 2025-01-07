@@ -66,7 +66,7 @@ use ruma::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use tokio::sync::broadcast::error::RecvError;
+use tokio_with_wasm::sync::broadcast::error::RecvError;
 use tracing::{debug, error};
 use url::Url;
 
@@ -191,7 +191,7 @@ pub struct Client {
     pub(crate) inner: AsyncRuntimeDropped<MatrixClient>,
     delegate: RwLock<Option<Arc<dyn ClientDelegate>>>,
     session_verification_controller:
-        Arc<tokio::sync::RwLock<Option<SessionVerificationController>>>,
+        Arc<tokio_with_wasm::sync::RwLock<Option<SessionVerificationController>>>,
 }
 
 impl Client {

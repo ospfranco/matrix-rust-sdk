@@ -3291,6 +3291,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.3",
  "tokio",
+ "tokio_with_wasm",
  "tracing",
  "tracing-appender",
  "tracing-core",

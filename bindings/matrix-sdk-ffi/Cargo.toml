@@ -29,7 +29,7 @@ extension-trait = "1.0.1"
 futures-util = { workspace = true }
 log-panics = { version = "2", features = ["with-backtrace"] }
 matrix-sdk-ffi-macros = { workspace = true }
-matrix-sdk-ui = { workspace = true, features = ["uniffi"] }
+matrix-sdk-ui = { workspace = true, features = ["uniffi", "js"] }
 mime = "0.3.16"
 once_cell = { workspace = true }
 ruma = { workspace = true, features = ["html", "unstable-unspecified", "unstable-msc3488", "compat-unset-avatar", "unstable-msc3245-v1-compat"] }
@@ -41,6 +41,7 @@ tracing-core = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["env-filter"] }
 tracing-appender = { version = "0.2.2" }
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+tokio_with_wasm = { workspace = true, features = ["macros"] }
 uniffi = { workspace = true, features = ["tokio"] }
 url = { workspace = true }
 zeroize = { workspace = true }

@@ -55,7 +55,7 @@ use ruma::{
     },
     EventId, UInt,
 };
-use tokio::{
+use tokio_with_wasm::{
     sync::Mutex,
     task::{AbortHandle, JoinHandle},
 };
