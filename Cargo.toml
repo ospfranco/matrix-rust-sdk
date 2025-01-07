@@ -36,7 +36,7 @@ eyeball-im = { version = "0.5.1", features = ["tracing"] }
 eyeball-im-util = "0.7.0"
 futures-core = "0.3.31"
 futures-executor = "0.3.21"
-futures-util = "0.3.31"
+futures-util = {version = "0.3.31", features = ["channel"] }
 gloo-timers = "0.3.0"
 growable-bloom-filter = "2.1.1"
 hkdf = "0.12.4"
