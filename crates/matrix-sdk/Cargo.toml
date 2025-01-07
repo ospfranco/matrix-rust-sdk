@@ -19,8 +19,8 @@ rustdoc-args = ["--cfg", "docsrs"]
 default = [
     "e2e-encryption",
     "automatic-room-key-forwarding",
-    "sqlite",
-    "native-tls",
+    # "indexeddb",
+    # "native-tls",
     "js",
 ]
 testing = [
