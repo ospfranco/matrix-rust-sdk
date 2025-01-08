@@ -8,7 +8,7 @@ license = "Apache-2.0"
 rust-version = { workspace = true }
 
 [features]
-# default = ["native-tls"]
+default = ["native-tls"]
 
 native-tls = ["matrix-sdk/native-tls"]
 rustls-tls = ["matrix-sdk/rustls-tls"]

@@ -14,13 +14,13 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{ImplItem, Item, TraitItem};
+//use syn::{ImplItem, Item, TraitItem};
 
 /// Attribute to specify the async runtime parameter for the `uniffi`
 /// export macros if there any `async fn`s in the input.
 #[proc_macro_attribute]
 pub fn export(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let has_async_fn = |item| {
+    /* let has_async_fn = |item| {
         if let Item::Fn(fun) = &item {
             if fun.sig.asyncness.is_some() {
                 return true;
@@ -44,21 +44,13 @@ pub fn export(attr: TokenStream, item: TokenStream) -> TokenStream {
         }
 
         false
-    };
+    }; */
 
     let attr2 = proc_macro2::TokenStream::from(attr);
     let item2 = proc_macro2::TokenStream::from(item.clone());
 
-    let res = match syn::parse(item) {
-        Ok(item) => match has_async_fn(item) {
-            true => quote! { #[uniffi::export(async_runtime = "tokio", #attr2)] },
-            false => quote! { #[uniffi::export(#attr2)] },
-        },
-        Err(e) => e.into_compile_error(),
-    };
-
     quote! {
-        #res
+        #[uniffi::export(#attr2)]
         #item2
     }
     .into()

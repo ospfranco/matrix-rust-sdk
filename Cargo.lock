@@ -286,18 +286,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async-compat"
-version = "0.2.2"
-source = "git+https://github.com/jplatte/async-compat?rev=16dc8597ec09a6102d58d4e7b67714a35dd0ecb8#16dc8597ec09a6102d58d4e7b67714a35dd0ecb8"
-dependencies = [
- "futures-core",
- "futures-io",
- "once_cell",
- "pin-project-lite",
- "tokio",
-]
-
-[[package]]
 name = "async-compression"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3274,7 +3262,6 @@ version = "0.2.0"
 dependencies = [
  "anyhow",
  "as_variant",
- "async-compat",
  "extension-trait",
  "eyeball-im",
  "futures-util",
@@ -3761,7 +3748,7 @@ version = "5.0.0-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23d385da3c602d29036d2f70beed71c36604df7570be17fed4c5b839616785bf"
 dependencies = [
- "base64 0.21.7",
+ "base64 0.22.1",
  "chrono",
  "getrandom",
  "http",
@@ -6251,7 +6238,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3210d57d6ab6065ab47a2898dacdb7c606fd6a4156196831fa3bf82e34ac58a6"
 dependencies = [
  "anyhow",
- "async-compat",
  "bytes",
  "camino",
  "log",
