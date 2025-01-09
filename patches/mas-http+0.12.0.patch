@@ -1,22 +1,61 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index 05dd02d..7ca0765 100644
+index 05dd02d..b5ce45b 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -21,8 +21,13 @@ opentelemetry-semantic-conventions.workspace = true
- opentelemetry.workspace = true
- reqwest.workspace = true
- rustls-platform-verifier.workspace = true
+@@ -1,28 +1,30 @@
+ [package]
+ name = "mas-http"
+ description = "HTTP utilities for the Matrix Authentication Service"
+-version.workspace = true
+-authors.workspace = true
+-edition.workspace = true
+-license.workspace = true
+-homepage.workspace = true
+-repository.workspace = true
+-
+-[lints]
+-workspace = true
++version = "0.12.0"
++# authors.workspace = true
++edition = "2021"
++# license.workspace = true
++# homepage.workspace = true
++# repository.workspace = true
+ 
+ [dependencies]
+-futures-util.workspace = true
+-headers.workspace = true
+-http.workspace = true
+-hyper-util.workspace = true
+-opentelemetry-http.workspace = true
+-opentelemetry-semantic-conventions.workspace = true
+-opentelemetry.workspace = true
+-reqwest.workspace = true
+-rustls-platform-verifier.workspace = true
 -tokio.workspace = true
- tower.workspace = true
- tower-http.workspace = true
- tracing.workspace = true
- tracing-opentelemetry.workspace = true
+-tower.workspace = true
+-tower-http.workspace = true
+-tracing.workspace = true
+-tracing-opentelemetry.workspace = true
++futures-util = "0.3.31"
++headers = "0.4.0"
++http = "1.2.0"
++hyper-util = { version = "0.1.10", features = ["client", "http1", "http2"]}
++opentelemetry-http = {version = "0.27.0", features = ["request"]}
++opentelemetry-semantic-conventions = {version = "0.27.0", features = ["semcov_experimental"]}
++opentelemetry = {version = "0.27.1", features = ["trace", "metrics"]}
++reqwest = { version = "0.12.12", default-features = false, features = ["http2", "rustls-tls-manual-roots", "charset", "json", "socks"]}
++rustls-platform-verifier = "0.3.4"
++tower = {version = "0.5.2", features = ["util"]}
++tower-http = {version = "0.6.2", features = ["cors", "fs", "add-extension", "set-header"]}
++tracing = "0.1.41"
++tracing-opentelemetry = {version = "0.28.0", default-features = false}
 +
-+[target.'cfg(target_arch = "wasm32")'.dependencies]
++# [target.'cfg(target_arch = "wasm32")'.dependencies]
 +web-time = { version = "1.1.0" }
 +
-+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-+tokio.workspace = true
++# [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
++# tokio.workspace = true
 \ No newline at end of file
 diff --git a/src/reqwest.rs b/src/reqwest.rs
 index b895338..f25cb48 100644
