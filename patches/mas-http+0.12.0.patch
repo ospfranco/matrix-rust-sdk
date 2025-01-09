@@ -1,0 +1,62 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 05dd02d..7ca0765 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -21,8 +21,13 @@ opentelemetry-semantic-conventions.workspace = true
+ opentelemetry.workspace = true
+ reqwest.workspace = true
+ rustls-platform-verifier.workspace = true
+-tokio.workspace = true
+ tower.workspace = true
+ tower-http.workspace = true
+ tracing.workspace = true
+ tracing-opentelemetry.workspace = true
++
++[target.'cfg(target_arch = "wasm32")'.dependencies]
++web-time = { version = "1.1.0" }
++
++[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
++tokio.workspace = true
+\ No newline at end of file
+diff --git a/src/reqwest.rs b/src/reqwest.rs
+index b895338..f25cb48 100644
+--- a/src/reqwest.rs
++++ b/src/reqwest.rs
+@@ -30,10 +30,13 @@ use opentelemetry_semantic_conventions::{
+         NETWORK_TYPE, SERVER_ADDRESS, SERVER_PORT, URL_FULL, URL_SCHEME, USER_AGENT_ORIGINAL,
+     },
+ };
++#[cfg(not(target_arch = "wasm32"))]
+ use tokio::time::Instant;
+ use tower::{BoxError, Service as _};
+ use tracing::Instrument;
+ use tracing_opentelemetry::OpenTelemetrySpanExt;
++#[cfg(target_arch = "wasm32")]
++use web_time::Instant;
+ 
+ use crate::METER;
+ 
+@@ -113,9 +116,7 @@ async fn send_traced(
+     let server_address = request.url().host_str().map(ToOwned::to_owned);
+     let server_port = request.url().port_or_known_default();
+     let scheme = request.url().scheme().to_owned();
+-    let user_agent = headers
+-        .typed_get::<UserAgent>()
+-        .map(tracing::field::display);
++    let user_agent = headers.typed_get::<UserAgent>().map(tracing::field::display);
+     let content_length = headers.typed_get().map(|ContentLength(len)| len);
+     let method = request.method().to_string();
+ 
+@@ -148,10 +149,8 @@ async fn send_traced(
+         propagator.inject_context(&context, &mut injector);
+     });
+ 
+-    let mut metrics_labels = vec![
+-        KeyValue::new(HTTP_REQUEST_METHOD, method.clone()),
+-        KeyValue::new(URL_SCHEME, scheme),
+-    ];
++    let mut metrics_labels =
++        vec![KeyValue::new(HTTP_REQUEST_METHOD, method.clone()), KeyValue::new(URL_SCHEME, scheme)];
+ 
+     if let Some(server_address) = server_address {
+         metrics_labels.push(KeyValue::new(SERVER_ADDRESS, server_address));
