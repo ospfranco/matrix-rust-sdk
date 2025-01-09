@@ -1,5 +1,5 @@
 diff --git a/Cargo.toml b/Cargo.toml
-index 05dd02d..b5ce45b 100644
+index 05dd02d..99920d3 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
 @@ -1,28 +1,30 @@
@@ -41,8 +41,8 @@ index 05dd02d..b5ce45b 100644
 +headers = "0.4.0"
 +http = "1.2.0"
 +hyper-util = { version = "0.1.10", features = ["client", "http1", "http2"]}
-+opentelemetry-http = {version = "0.27.0", features = ["request"]}
-+opentelemetry-semantic-conventions = {version = "0.27.0", features = ["semcov_experimental"]}
++opentelemetry-http = {version = "0.27.0", features = ["reqwest"]}
++opentelemetry-semantic-conventions = {version = "0.27.0", features = ["semconv_experimental"]}
 +opentelemetry = {version = "0.27.1", features = ["trace", "metrics"]}
 +reqwest = { version = "0.12.12", default-features = false, features = ["http2", "rustls-tls-manual-roots", "charset", "json", "socks"]}
 +rustls-platform-verifier = "0.3.4"
