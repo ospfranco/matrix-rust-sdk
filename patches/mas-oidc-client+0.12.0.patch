@@ -1,0 +1,207 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index fd65652..5b18566 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -1,49 +1,45 @@
+ [package]
+ name = "mas-oidc-client"
+ description = "OpenID Connect client library used by the Matrix Authentication Service"
+-version.workspace = true
+-authors.workspace = true
+-edition.workspace = true
+-license.workspace = true
+-homepage.workspace = true
+-repository.workspace = true
+-
+-[lints]
+-workspace = true
++version = "0.12.0"
++authors = ["Element Backend Team"]
++edition = "2021"
++license = "AGPL-3.0-only"
++homepage = "https://element-hq.github.io/matrix-authentication-service/"
++repository = "https://github.com/element-hq/matrix-authentication-service/"
+ 
+ [dependencies]
+-async-trait.workspace = true
++async-trait = "0.1.84"
+ base64ct = { version = "1.6.0", features = ["std"] }
+-chrono.workspace = true
+-elliptic-curve.workspace = true
++chrono = { version = "0.4.39", default-features = false, features = ["serde", "clock"] }
++elliptic-curve = { version = "0.13.8", features = ["std", "pem", "sec1"]}
+ form_urlencoded = "1.2.1"
+-headers.workspace = true
+-http.workspace = true
++headers = "0.4.0"
++http = "1.2.0"
+ language-tags = "0.3.2"
+ mime = "0.3.17"
+-pem-rfc7468.workspace = true
+-pkcs8.workspace = true
+-p256.workspace = true
+-rand.workspace = true
+-reqwest.workspace = true
+-serde.workspace = true
+-serde_json.workspace = true
++pem-rfc7468 = {version = "0.7.0", features = ["std"]}
++pkcs8 = {version = "0.10.2", features = ["std", "pkcs5", "encryption"]}
++p256 = {version = "0.13.2", features = ["std"]}
++rand = "0.8.5"
++reqwest = {version = "0.12.12", default-features = false, features = ["http2", "rustls-tls-manual-roots", "charset", "json", "socks"]}
++serde = "1.0.217"
++serde_json = "1.0.134"
+ serde_urlencoded = "0.7.1"
+-thiserror.workspace = true
+-tracing.workspace = true
+-url.workspace = true
++thiserror = "2.0.9"
++tracing = "0.1.41"
++url = { version = "2.5.4", features = ["serde"]}
+ 
+-mas-http.workspace = true
+-mas-iana.workspace = true
+-mas-jose.workspace = true
+-mas-keystore.workspace = true
+-oauth2-types.workspace = true
++mas-iana = { git ="https://github.com/element-hq/matrix-authentication-service.git"}
++mas-jose = { git ="https://github.com/element-hq/matrix-authentication-service.git"}
++mas-keystore = { git ="https://github.com/element-hq/matrix-authentication-service.git"}
++oauth2-types = { git ="https://github.com/element-hq/matrix-authentication-service.git"}
+ 
+ [dev-dependencies]
+ assert_matches = "1.5.0"
+ bitflags = "2.6.0"
+ rand_chacha = "0.3.1"
+-tokio.workspace = true
+-wiremock.workspace = true
+-http-body-util.workspace = true
+-rustls.workspace = true
++tokio = {version = "1.42.0", features = ["full"]}
++wiremock = "0.6.2"
++http-body-util = "0.1.2"
++rustls = "0.23.20"
+diff --git a/src/requests/discovery.rs b/src/requests/discovery.rs
+index 1d724b5..e0834af 100644
+--- a/src/requests/discovery.rs
++++ b/src/requests/discovery.rs
+@@ -8,7 +8,6 @@
+ //!
+ //! [Discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html
+ 
+-use mas_http::RequestBuilderExt;
+ use oauth2_types::oidc::{ProviderMetadata, VerifiedProviderMetadata};
+ use url::Url;
+ 
+@@ -33,13 +32,7 @@ async fn discover_inner(
+ 
+     let config_url = config_url.join(".well-known/openid-configuration")?;
+ 
+-    let response = client
+-        .get(config_url.as_str())
+-        .send_traced()
+-        .await?
+-        .error_for_status()?
+-        .json()
+-        .await?;
++    let response = client.get(config_url.as_str()).send().await?.error_for_status()?.json().await?;
+ 
+     tracing::debug!(?response);
+ 
+diff --git a/src/requests/jose.rs b/src/requests/jose.rs
+index a4c8583..09f0373 100644
+--- a/src/requests/jose.rs
++++ b/src/requests/jose.rs
+@@ -9,7 +9,6 @@
+ use std::collections::HashMap;
+ 
+ use chrono::{DateTime, Utc};
+-use mas_http::RequestBuilderExt;
+ use mas_iana::jose::JsonWebSignatureAlg;
+ use mas_jose::{
+     claims::{self, TimeOptions},
+@@ -42,13 +41,8 @@ pub async fn fetch_jwks(
+ ) -> Result<PublicJsonWebKeySet, JwksError> {
+     tracing::debug!("Fetching JWKS...");
+ 
+-    let response: PublicJsonWebKeySet = client
+-        .get(jwks_uri.as_str())
+-        .send_traced()
+-        .await?
+-        .error_for_status()?
+-        .json()
+-        .await?;
++    let response: PublicJsonWebKeySet =
++        client.get(jwks_uri.as_str()).send().await?.error_for_status()?.json().await?;
+ 
+     Ok(response)
+ }
+@@ -104,12 +98,7 @@ pub fn verify_signed_jwt<'a>(
+ ) -> Result<Jwt<'a, HashMap<String, Value>>, JwtVerificationError> {
+     tracing::debug!("Validating JWT...");
+ 
+-    let JwtVerificationData {
+-        issuer,
+-        jwks,
+-        client_id,
+-        signing_algorithm,
+-    } = verification_data;
++    let JwtVerificationData { issuer, jwks, client_id, signing_algorithm } = verification_data;
+ 
+     let jwt: Jwt<HashMap<String, Value>> = jwt.try_into()?;
+ 
+diff --git a/src/requests/token.rs b/src/requests/token.rs
+index 38e9884..b58ff78 100644
+--- a/src/requests/token.rs
++++ b/src/requests/token.rs
+@@ -8,7 +8,6 @@
+ 
+ use chrono::{DateTime, Utc};
+ use http::header::ACCEPT;
+-use mas_http::RequestBuilderExt;
+ use mime::APPLICATION_JSON;
+ use oauth2_types::requests::{AccessTokenRequest, AccessTokenResponse};
+ use rand::Rng;
+@@ -50,13 +49,12 @@ pub async fn request_access_token(
+ ) -> Result<AccessTokenResponse, TokenRequestError> {
+     tracing::debug!(?request, "Requesting access token...");
+ 
+-    let token_request = http_client
+-        .post(token_endpoint.as_str())
+-        .header(ACCEPT, APPLICATION_JSON.as_ref());
++    let token_request =
++        http_client.post(token_endpoint.as_str()).header(ACCEPT, APPLICATION_JSON.as_ref());
+ 
+     let token_response = client_credentials
+         .authenticated_form(token_request, &request, now, rng)?
+-        .send_traced()
++        .send()
+         .await?
+         .error_from_oauth2_error_response()
+         .await?
+diff --git a/src/requests/userinfo.rs b/src/requests/userinfo.rs
+index fbcd270..7a73cbe 100644
+--- a/src/requests/userinfo.rs
++++ b/src/requests/userinfo.rs
+@@ -12,7 +12,6 @@ use std::collections::HashMap;
+ 
+ use headers::{ContentType, HeaderMapExt, HeaderValue};
+ use http::header::ACCEPT;
+-use mas_http::RequestBuilderExt;
+ use mime::Mime;
+ use serde_json::Value;
+ use url::Url;
+@@ -71,11 +70,8 @@ pub async fn fetch_userinfo(
+         .bearer_auth(access_token)
+         .header(ACCEPT, HeaderValue::from_static(expected_content_type));
+ 
+-    let userinfo_response = userinfo_request
+-        .send_traced()
+-        .await?
+-        .error_from_oauth2_error_response()
+-        .await?;
++    let userinfo_response =
++        userinfo_request.send().await?.error_from_oauth2_error_response().await?;
+ 
+     let content_type: Mime = userinfo_response
+         .headers()

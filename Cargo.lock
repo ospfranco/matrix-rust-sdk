@@ -2932,23 +2932,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "mas-http"
-version = "0.12.0"
-dependencies = [
- "futures-util",
- "headers",
- "http",
- "hyper-util",
- "reqwest",
- "tower 0.5.2",
- "tower-http",
- "web-time",
-]
-
-[[package]]
 name = "mas-iana"
 version = "0.12.0"
-source = "git+https://github.com/element-hq/matrix-authentication-service.git?branch=main#0b90c331c5e9af1ffeb1b363a23a56f777e832ec"
+source = "git+https://github.com/element-hq/matrix-authentication-service.git#2605d3a8e050719babab04e093f60aa39f82b3ee"
 dependencies = [
  "schemars",
  "serde",
@@ -2957,7 +2943,7 @@ dependencies = [
 [[package]]
 name = "mas-jose"
 version = "0.12.0"
-source = "git+https://github.com/element-hq/matrix-authentication-service.git?branch=main#0b90c331c5e9af1ffeb1b363a23a56f777e832ec"
+source = "git+https://github.com/element-hq/matrix-authentication-service.git#2605d3a8e050719babab04e093f60aa39f82b3ee"
 dependencies = [
  "base64ct",
  "chrono",
@@ -2987,7 +2973,7 @@ dependencies = [
 [[package]]
 name = "mas-keystore"
 version = "0.12.0"
-source = "git+https://github.com/element-hq/matrix-authentication-service.git?branch=main#0b90c331c5e9af1ffeb1b363a23a56f777e832ec"
+source = "git+https://github.com/element-hq/matrix-authentication-service.git#2605d3a8e050719babab04e093f60aa39f82b3ee"
 dependencies = [
  "aead",
  "base64ct",
@@ -3015,7 +3001,6 @@ dependencies = [
 [[package]]
 name = "mas-oidc-client"
 version = "0.12.0"
-source = "git+https://github.com/element-hq/matrix-authentication-service.git?branch=main#0b90c331c5e9af1ffeb1b363a23a56f777e832ec"
 dependencies = [
  "async-trait",
  "base64ct",
@@ -3025,7 +3010,6 @@ dependencies = [
  "headers",
  "http",
  "language-tags",
- "mas-http",
  "mas-iana",
  "mas-jose",
  "mas-keystore",
@@ -3820,7 +3804,7 @@ dependencies = [
 [[package]]
 name = "oauth2-types"
 version = "0.12.0"
-source = "git+https://github.com/element-hq/matrix-authentication-service.git?branch=main#0b90c331c5e9af1ffeb1b363a23a56f777e832ec"
+source = "git+https://github.com/element-hq/matrix-authentication-service.git#2605d3a8e050719babab04e093f60aa39f82b3ee"
 dependencies = [
  "chrono",
  "data-encoding",
@@ -5962,20 +5946,6 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
-]
-
-[[package]]
-name = "tower-http"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "403fa3b783d4b626a8ad51d766ab03cb6d2dbfc46b1c5d4448395e6628dc9697"
-dependencies = [
- "bitflags 2.6.0",
- "bytes",
- "http",
- "pin-project-lite",
- "tower-layer",
- "tower-service",
 ]
 
 [[package]]
