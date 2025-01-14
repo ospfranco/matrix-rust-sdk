@@ -56,7 +56,7 @@ features = [
     "experimental-oidc",
     "experimental-widgets",
     "markdown",
-    "rustls-tls", # note: differ from block below
+    "native-tls",
     "socks",
     # "sqlite",
     "indexeddb",
