@@ -81,6 +81,42 @@ index fd65652..5b18566 100644
 +wiremock = "0.6.2"
 +http-body-util = "0.1.2"
 +rustls = "0.23.20"
+diff --git a/src/error.rs b/src/error.rs
+index 1642054..e6be925 100644
+--- a/src/error.rs
++++ b/src/error.rs
+@@ -271,10 +271,7 @@ pub struct OAuth2Error {
+ impl std::fmt::Display for OAuth2Error {
+     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+         if let Some(error) = &self.error {
+-            write!(
+-                f,
+-                "Request to the provider failed with the following error: {error}"
+-            )
++            write!(f, "Request to the provider failed with the following error: {error}")
+         } else {
+             write!(f, "Request to the provider failed")
+         }
+@@ -295,7 +292,7 @@ pub(crate) trait ResponseExt {
+         Self: Sized;
+ }
+ 
+-#[async_trait]
++#[async_trait(?Send)]
+ impl ResponseExt for reqwest::Response {
+     async fn error_from_oauth2_error_response(self) -> Result<Self, OAuth2Error> {
+         let Err(inner) = self.error_for_status_ref() else {
+@@ -304,9 +301,6 @@ impl ResponseExt for reqwest::Response {
+ 
+         let error: OAuth2ErrorResponse = self.json().await?;
+ 
+-        Err(OAuth2Error {
+-            error: Some(error),
+-            inner,
+-        })
++        Err(OAuth2Error { error: Some(error), inner })
+     }
+ }
 diff --git a/src/requests/discovery.rs b/src/requests/discovery.rs
 index 1d724b5..e0834af 100644
 --- a/src/requests/discovery.rs
