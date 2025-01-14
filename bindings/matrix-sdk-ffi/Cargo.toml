@@ -53,8 +53,8 @@ default-features = false
 features = [
     "anyhow",
     "e2e-encryption",
-    # "experimental-oidc",
-    # "experimental-widgets",
+    "experimental-oidc",
+    "experimental-widgets",
     "markdown",
     "rustls-tls", # note: differ from block below
     "socks",
