@@ -1,0 +1,134 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 513643e..9065993 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -1,46 +1,46 @@
+ [package]
+ name = "mas-http"
+ description = "HTTP utilities for the Matrix Authentication Service"
+-version.workspace = true
+-authors.workspace = true
+-edition.workspace = true
+-license.workspace = true
+-homepage.workspace = true
+-repository.workspace = true
++version = "0.11.0"
++# authors = true
++edition = "2021"
++# license = true
++# homepage = true
++# repository = true
+ 
+-[lints]
+-workspace = true
++# [lints]
++# workspace = true
+ 
+ [dependencies]
+-async-trait.workspace = true
+-bytes.workspace = true
++async-trait = "0.1.82"
++bytes = "1.7.1"
+ futures-util = "0.3.30"
+-headers.workspace = true
+-http.workspace = true
+-http-body.workspace = true
+-http-body-util.workspace = true
+-hyper.workspace = true
+-hyper-util.workspace = true
+-hyper-rustls = { workspace = true, optional = true }
+-opentelemetry.workspace = true
+-opentelemetry-semantic-conventions.workspace = true
+-rustls = { workspace = true, optional = true }
+-rustls-platform-verifier = { workspace = true, optional = true }
++headers = "0.4.0"
++http = "1.1.0"
++http-body = "1.0.0"
++http-body-util = "0.1.2"
++hyper = { version = "1.4.1", features = ["client", "http1", "http2"]}
++hyper-util = "0.1.2"
++hyper-rustls = { version = "0.27.2", features = ["http1", "http2"], optional = true }
++# opentelemetry = true
++# opentelemetry-semantic-conventions = true
++rustls = { version = "0.23.12",  optional = true }
++rustls-platform-verifier = { version = "0.3.4", optional = true }
+ pin-project-lite = "0.2.14"
+-serde.workspace = true
+-serde_json.workspace = true
++serde = { version = "1.0.209", features = ["derive"] }
++serde_json = { version = "1.0.127", features = ["preserve_order"] }
+ serde_urlencoded = "0.7.1"
+-thiserror.workspace = true
+-tower.workspace = true
+-tower-http.workspace = true
+-tracing.workspace = true
+-tracing-opentelemetry.workspace = true
++thiserror = "1.0.63"
++tower = { version = "0.4.13", features = ["util"] }
++tower-http = {version = "0.5.2", features = ["cors"]}
++# tracing = "0.1.40"
++# tracing-opentelemetry = true
+ 
+-mas-tower = { workspace = true, optional = true }
++mas-tower = { version = "0.11.0", optional = true }
+ 
+ [dev-dependencies]
+-anyhow.workspace = true
+-tokio.workspace = true
++anyhow = "1.0.86"
++tokio = {version = "1.40.0", features = ["full"]}
+ 
+ [features]
+ client = [
+diff --git a/src/ext.rs b/src/ext.rs
+index 850f590..a285167 100644
+--- a/src/ext.rs
++++ b/src/ext.rs
+@@ -32,20 +32,20 @@ static PROPAGATOR_HEADERS: OnceLock<Vec<HeaderName>> = OnceLock::new();
+ /// # Panics
+ ///
+ /// When called twice
+-pub fn set_propagator(propagator: &dyn opentelemetry::propagation::TextMapPropagator) {
+-    let headers = propagator
+-        .fields()
+-        .map(|h| HeaderName::try_from(h).unwrap())
+-        .collect();
+-
+-    tracing::debug!(
+-        ?headers,
+-        "Headers allowed in CORS requests for trace propagators set"
+-    );
+-    PROPAGATOR_HEADERS
+-        .set(headers)
+-        .expect(concat!(module_path!(), "::set_propagator was called twice"));
+-}
++// pub fn set_propagator(propagator: &dyn opentelemetry::propagation::TextMapPropagator) {
++//     let headers = propagator
++//         .fields()
++//         .map(|h| HeaderName::try_from(h).unwrap())
++//         .collect();
++
++//     tracing::debug!(
++//         ?headers,
++//         "Headers allowed in CORS requests for trace propagators set"
++//     );
++//     PROPAGATOR_HEADERS
++//         .set(headers)
++//         .expect(concat!(module_path!(), "::set_propagator was called twice"));
++// }
+ 
+ pub trait CorsLayerExt {
+     #[must_use]
+diff --git a/src/lib.rs b/src/lib.rs
+index 48b7f80..86fb836 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -32,7 +32,7 @@ pub use self::{
+     layers::client::{ClientLayer, ClientService},
+ };
+ pub use self::{
+-    ext::{set_propagator, CorsLayerExt, ServiceExt as HttpServiceExt},
++    ext::{CorsLayerExt, ServiceExt as HttpServiceExt},
+     layers::{
+         body_to_bytes_response::{self, BodyToBytesResponse, BodyToBytesResponseLayer},
+         bytes_to_body_request::{self, BytesToBodyRequest, BytesToBodyRequestLayer},

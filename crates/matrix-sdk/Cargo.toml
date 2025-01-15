@@ -100,7 +100,7 @@ imbl = { workspace = true, features = ["serde"] }
 indexmap = { workspace = true }
 js_int = "0.2.2"
 language-tags = { version = "0.3.2", optional = true }
-mas-oidc-client = { git ="https://github.com/element-hq/matrix-authentication-service.git", branch = "main", default-features = false, optional = true }
+mas-oidc-client = { git ="https://github.com/element-hq/matrix-authentication-service.git", tag = "v0.11.0", default-features = false, optional = true }
 matrix-sdk-base = { workspace = true }
 matrix-sdk-common = { workspace = true }
 matrix-sdk-ffi-macros = { workspace = true, optional = true }
