@@ -69,7 +69,7 @@ impl OidcServer {
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait::async_trait(?Send)]
 impl OidcBackend for OidcServer {
     async fn discover(
         &self,

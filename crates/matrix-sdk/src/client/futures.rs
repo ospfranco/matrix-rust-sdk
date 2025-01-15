@@ -21,10 +21,7 @@ use eyeball::SharedObservable;
 use eyeball::Subscriber;
 #[cfg(feature = "experimental-oidc")]
 use mas_oidc_client::{
-    error::{
-        Error as OidcClientError, ErrorBody as OidcErrorBody, HttpError as OidcHttpError,
-        TokenRefreshError, TokenRequestError,
-    },
+    error::{Error as OidcClientError, TokenRefreshError, TokenRequestError},
     types::errors::ClientErrorCode,
 };
 use matrix_sdk_common::boxed_into_future;
@@ -136,22 +133,27 @@ where
 
                         #[cfg(feature = "experimental-oidc")]
                         RefreshTokenError::Oidc(oidc_error) => {
-                            match **oidc_error {
+                            match &**oidc_error {
                                 OidcError::Oidc(OidcClientError::TokenRefresh(
                                     TokenRefreshError::Token(TokenRequestError::Http(
-                                        OidcHttpError {
-                                            body:
-                                                Some(OidcErrorBody {
-                                                    error: ClientErrorCode::InvalidGrant,
-                                                    ..
-                                                }),
-                                            ..
-                                        },
+                                        reqwest_error,
                                     )),
                                 )) => {
-                                    error!("Token refresh: OIDC refresh_token rejected with invalid grant");
-                                    // The refresh was denied, signal to sign out the user.
-                                    client.broadcast_unknown_token(soft_logout);
+                                    if reqwest_error.status()
+                                        == Some(reqwest::StatusCode::BAD_REQUEST)
+                                        && reqwest_error
+                                            .url()
+                                            .as_ref()
+                                            .map_or(false, |url| url.path() == "/token")
+                                    {
+                                        error!("Token refresh: OIDC refresh_token rejected with invalid grant");
+                                        // The refresh was denied, signal to sign out the user.
+                                        client.broadcast_unknown_token(soft_logout);
+                                    }
+
+                                    // error!("Token refresh: OIDC refresh_token rejected with invalid grant");
+                                    // // The refresh was denied, signal to sign out the user.
+                                    // client.broadcast_unknown_token(soft_logout);
                                 }
                                 _ => {
                                     trace!("Token refresh: OIDC refresh encountered a problem.");
