@@ -26,6 +26,7 @@ use mas_oidc_client::{
         IdToken,
     },
 };
+use matrix_sdk_base::{SendOutsideWasm, SyncOutsideWasm};
 use url::Url;
 
 use super::{AuthorizationCode, OidcError, OidcSessionTokens};
@@ -42,7 +43,7 @@ pub(super) struct RefreshedSessionTokens {
 
 #[cfg_attr(target_arch = "wasm32", async_trait::async_trait(?Send))]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait::async_trait)]
-pub(super) trait OidcBackend: std::fmt::Debug + Send {
+pub(super) trait OidcBackend: std::fmt::Debug + SendOutsideWasm + SyncOutsideWasm {
     async fn discover(
         &self,
         issuer: &str,

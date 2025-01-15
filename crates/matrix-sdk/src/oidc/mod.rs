@@ -196,7 +196,7 @@ use ruma::api::client::discovery::get_authentication_issuer;
 use serde::{Deserialize, Serialize};
 use sha2::Digest as _;
 use thiserror::Error;
-use tokio::{spawn, sync::Mutex};
+use tokio::{spawn, sync::Mutex, task::spawn_local};
 use tracing::{debug, error, info, instrument, trace, warn};
 use url::Url;
 
@@ -1456,7 +1456,7 @@ impl Oidc {
 
         let this = self.clone();
 
-        spawn(async move {
+        spawn_local(async move {
             match this
                 .refresh_access_token_inner(
                     refresh_token,
