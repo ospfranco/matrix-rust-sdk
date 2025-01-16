@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::fmt::Debug;
-
 use bytes::Bytes;
 use bytesize::ByteSize;
 use eyeball::SharedObservable;
 use ruma::api::{error::FromHttpResponseError, IncomingResponse, OutgoingRequest};
+use std::fmt::Debug;
+use std::time::Duration;
 
 use super::{response_to_http_response, HttpClient, TransmissionProgress};
 use crate::{config::RequestConfig, error::HttpError};
@@ -46,4 +46,57 @@ impl HttpClient {
 
         Ok(R::IncomingResponse::try_from_http_response(response)?)
     }
+}
+
+#[cfg(target_arch = "wasm32")]
+pub(super) async fn send_request(
+    client: &reqwest::Client,
+    request: &http::Request<Bytes>,
+    _timeout: Duration,
+    send_progress: SharedObservable<TransmissionProgress>,
+) -> Result<http::Response<Bytes>, HttpError> {
+    use http::header::CONTENT_LENGTH;
+
+    let request = clone_request(request);
+    let content_length = request.body().len();
+
+    // Update progress total once, as streaming isn't supported in WASM.
+    if send_progress.subscriber_count() != 0 {
+        send_progress.update(|p| p.total += content_length);
+    }
+
+    let req = {
+        let mut req = reqwest::Request::try_from(request)?;
+
+        // Set the Content-Length header manually if needed.
+        req.headers_mut().insert(CONTENT_LENGTH, content_length.into());
+
+        // Set the timeout for the request.
+        // This is not supported by the `reqwest` crate in WASM???
+        // *req.timeout_mut() = Some(timeout);
+
+        req
+    };
+
+    // Execute the request.
+    let response = client.execute(req).await?;
+
+    // Update progress to 100% after response.
+    if send_progress.subscriber_count() != 0 {
+        send_progress.update(|p| p.current = content_length);
+    }
+
+    // Convert the response to `http::Response<Bytes>`.
+    Ok(response_to_http_response(response).await?)
+}
+
+// Clones all request parts except the extensions which can't be cloned.
+// See also https://github.com/hyperium/http/issues/395
+fn clone_request(request: &http::Request<Bytes>) -> http::Request<Bytes> {
+    let mut builder = http::Request::builder()
+        .version(request.version())
+        .method(request.method())
+        .uri(request.uri());
+    *builder.headers_mut().unwrap() = request.headers().clone();
+    builder.body(request.body().clone()).unwrap()
 }

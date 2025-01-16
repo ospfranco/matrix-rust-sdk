@@ -274,7 +274,7 @@ impl tower::Service<http::Request<Bytes>> for HttpClient {
         let inner = self.inner.clone();
 
         let fut = async move {
-            native::send_request(&inner, &req, DEFAULT_REQUEST_TIMEOUT, Default::default())
+            wasm::send_request(&inner, &req, DEFAULT_REQUEST_TIMEOUT, Default::default())
                 .await
                 .map_err(Into::into)
         };
