@@ -218,8 +218,22 @@ use self::{
     backend::{server::OidcServer, OidcBackend},
     cross_process::{CrossProcessRefreshLockGuard, CrossProcessRefreshManager},
 };
+
+#[cfg(all(
+    feature = "experimental-oidc",
+    feature = "e2e-encryption",
+    not(target_arch = "wasm32")
+))]
 use crate::{
     authentication::{qrcode::LoginWithQrCode, AuthData},
+    client::SessionChange,
+    oidc::registrations::{ClientId, OidcRegistrations},
+    Client, HttpError, RefreshTokenError, Result,
+};
+
+#[cfg(all(feature = "experimental-oidc", feature = "e2e-encryption", target_arch = "wasm32"))]
+use crate::{
+    authentication::AuthData,
     client::SessionChange,
     oidc::registrations::{ClientId, OidcRegistrations},
     Client, HttpError, RefreshTokenError, Result,
