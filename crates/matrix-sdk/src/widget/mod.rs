@@ -19,7 +19,10 @@ use std::{fmt, time::Duration};
 use async_channel::{Receiver, Sender};
 use ruma::api::client::delayed_events::DelayParameters;
 use serde::de::{self, Deserialize, Deserializer, Visitor};
-use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
+use tokio::{
+    sync::mpsc::{unbounded_channel, UnboundedSender},
+    task::spawn_local,
+};
 use tokio_util::sync::{CancellationToken, DropGuard};
 
 use self::{
@@ -259,7 +262,7 @@ impl WidgetDriver {
                 let mut matrix = matrix_driver.events();
                 let incoming_msg_tx = incoming_msg_tx.clone();
 
-                tokio::spawn(async move {
+                spawn_local(async move {
                     loop {
                         tokio::select! {
                             _ = stop_forwarding.cancelled() => {
